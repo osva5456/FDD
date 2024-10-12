@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+typedef struct {
+    double x;
+    double y;
+} Punto;
+
+Punto generar_punto() {
+    Punto p;
+    p.x = ((double)rand() / RAND_MAX) * 200 - 100; // Rango de -100 a 100
+    p.y = ((double)rand() / RAND_MAX) * 200 - 100;
+    return p;
+}
+
+double distancia(Punto p1, Punto p2) {
+    return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+void encontrar_punto_mas_cercano(Punto* puntos, int n, Punto* par_cercano, double* min_distancia) {
+    *min_distancia = INFINITY; 
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            double d = distancia(puntos[i], puntos[j]);
+            if (d < *min_distancia) {
+                *min_distancia = d;
+                par_cercano[0] = puntos[i];
+                par_cercano[1] = puntos[j];
+            }
+        }
+    }
+}
+
+int main() {
+    srand(time(NULL)); 
+
+    int n;
+
+    printf("Ingrese el número de puntos: ");
+    scanf("%d", &n);
+
+    if (n <= 0) {
+        printf("El número de puntos debe ser mayor que cero.\n");
+        return 1;
+    }
+
+    Punto* puntos = (Punto*)malloc(n * sizeof(Punto));
+
+    for (int j = 0; j < n; j++) {
+        puntos[j] = generar_punto();
+    }
+
+    Punto par_cercano[2];
+    double min_distancia;
+
+    clock_t inicio = clock();
+    encontrar_punto_mas_cercano(puntos, n, par_cercano, &min_distancia);
+    clock_t fin = clock();
+
+    double tiempo_ejecucion = (double)(fin - inicio) / CLOCKS_PER_SEC;
+
+    printf("Para n=%d: El par más cercano es ((%.2f, %.2f), (%.2f, %.2f)) con una distancia de %.4f. Tiempo de ejecución: %.6f segundos.\n",
+           n,
+           par_cercano[0].x, par_cercano[0].y,
+           par_cercano[1].x, par_cercano[1].y,
+           min_distancia,
+           tiempo_ejecucion);
+
+    free(puntos);
+
+    return 0;
+}
+
