@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+typedef struct {
+    double x;
+    double y;
+} Point;
+
+double distance(Point p1, Point p2) {
+    return sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+}
+
+void closest_pair(Point points[], int n, Point *closest1, Point *closest2, double *min_dist) {
+    *min_dist = INFINITY; 
+
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) {
+            double dist = distance(points[i], points[j]);
+            if (dist < *min_dist) {
+                *min_dist = dist;
+                *closest1 = points[i];
+                *closest2 = points[j];
+            }
+        }
+    }
+}
+
+void generate_random_points(Point points[], int n) {
+    for (int i = 0; i < n; i++) {
+        points[i].x = ((double)rand() / RAND_MAX) * 200 - 100; 
+        points[i].y = ((double)rand() / RAND_MAX) * 200 - 100; 
+    }
+}
+
+int main() {
+    srand(time(NULL)); 
+
+    int n;
+    
+    printf("Ingrese el número de puntos: ");
+    scanf("%d", &n);
+
+    if (n <= 0) {
+        fprintf(stderr, "El número de puntos debe ser mayor que cero.\n");
+        return 1;
+    }
+
+    Point *points = (Point *)malloc(n * sizeof(Point)); 
+    
+    if (points == NULL) { 
+        fprintf(stderr, "Error al asignar memoria\n");
+        return 1;
+    }
+
+    generate_random_points(points, n);
+
+    Point closest1, closest2;
+    double min_distance;
+
+    clock_t start_time = clock();
+    closest_pair(points, n, &closest1, &closest2, &min_distance);
+    clock_t end_time = clock();
+
+    double execution_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+
+    printf("Par de puntos más cercanos: (%.4f, %.4f) y (%.4f, %.4f)\n", 
+           closest1.x, closest1.y, closest2.x, closest2.y);
+    printf("Distancia mínima: %.4f\n", min_distance);
+    printf("Tiempo de ejecución: %.6f segundos\n", execution_time);
+
+    free(points); 
+
+    return 0;
+}
+
