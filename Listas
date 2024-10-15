@@ -1,0 +1,140 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct ListNode {
+    int val;
+    struct ListNode *next;
+};
+
+struct ListNode* createNode(int value) {
+    struct ListNode* newNode = (struct ListNode*)malloc(sizeof(struct ListNode));
+    newNode->val = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+struct ListNode* mergeTwoLists(struct ListNode* l1, struct ListNode* l2) {
+    struct ListNode dummy;
+    struct ListNode* tail = &dummy;
+    dummy.next = NULL;
+
+    while (l1 != NULL && l2 != NULL) {
+        if (l1->val < l2->val) {
+            tail->next = l1;
+            l1 = l1->next;
+        } else {
+            tail->next = l2;
+            l2 = l2->next;
+        }
+        tail = tail->next;
+    }
+
+    if (l1 != NULL) {
+        tail->next = l1;
+    } else {
+        tail->next = l2;
+    }
+
+    return dummy.next; 
+}
+
+struct ListNode* mergeKLists(struct ListNode** lists, int k) {
+    if (k == 0) return NULL;
+
+    while (k > 1) {
+        int j = 0; 
+        for (int i = 0; i < k; i += 2) {
+            if (i + 1 < k) {
+                lists[j++] = mergeTwoLists(lists[i], lists[i + 1]);
+            } else {
+                lists[j++] = lists[i]; 
+            }
+        }
+        k = j; 
+    }
+
+    return lists[0]; 
+}
+
+void printList(struct ListNode* node) {
+    while (node != NULL) {
+        printf("%d -> ", node->val);
+        node = node->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    int n; 
+
+    
+    printf("Ingrese el número de listas (0 <= k <= 10000): ");
+    scanf("%d", &n);
+
+    if (n < 0 || n > 10000) {
+        printf("Error: El número de listas debe estar entre 0 y 10,000.\n");
+        return -1; 
+    }
+
+    struct ListNode** lists = (struct ListNode**)malloc(n * sizeof(struct ListNode*));
+
+    for (int i = 0; i < n; i++) {
+        int m; 
+
+        printf("Ingrese el número de nodos en la lista %d (0 <= length <= 500): ", i + 1);
+        scanf("%d", &m);
+
+        if (m < 0 || m > 500) {
+            printf("Error: El número de nodos en una lista debe estar entre 0 y 500.\n");
+            free(lists); 
+        }
+
+        struct ListNode* head = NULL;
+        struct ListNode* tail = NULL;
+
+        printf("Ingrese los valores de los nodos en orden ascendente (-10000 <= value <= 10000): ");
+        
+        for (int j = 0; j < m; j++) {
+            int value;
+            scanf("%d", &value);
+
+            if (value < -10000 || value > 10000) {
+                printf("Error: El valor del nodo debe estar entre -10,000 y 10,000.\n");
+                free(lists); 
+                return -1; 
+            }
+
+            struct ListNode* newNode = createNode(value);
+            if (head == NULL) { 
+                head = newNode;
+                tail = newNode;
+            } else { 
+                tail->next = newNode;
+                tail = newNode;
+            }
+        }
+
+        lists[i] = head; 
+
+        printf("Lista %d: ", i + 1);
+        printList(lists[i]);
+    }
+
+    struct ListNode* mergedList = mergeKLists(lists, n);
+
+    printf("Lista fusionada: ");
+    printList(mergedList);
+
+    for (int i = 0; i < n; i++) {
+        struct ListNode* current = lists[i];
+        while (current != NULL) {
+            struct ListNode* temp = current;
+            current = current->next;
+            free(temp);
+        }
+    }
+    
+    free(lists); 
+
+    return 0;
+}
