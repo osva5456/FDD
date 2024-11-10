@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <string.h>
+
+void compressString(const char *word, char *comp) {
+    int length = strlen(word);
+    int compIndex = 0;
+
+    for (int i = 0; i < length;) {
+        char currentChar = word[i];
+        int count = 0;
+
+        while (i < length && word[i] == currentChar && count < 9) {
+            count++;
+            i++;
+        }
+
+        comp[compIndex++] = '0' + count; 
+        comp[compIndex++] = currentChar;
+    }
+
+    comp[compIndex] = '\0';
+}
+
+int main() {
+    char word[100]; 
+    char compressed[100]; 
+
+    printf("Ingrese una palabra: ");
+    fgets(word, sizeof(word), stdin);
+
+    word[strcspn(word, "\n")] = '\0';
+
+    compressString(word, compressed);
+
+    printf("Cadena original: %s\n", word);
+    printf("Cadena comprimida: %s\n", compressed);
+
+    return 0;
+}
