@@ -1,0 +1,52 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int maxArea(int* height, int heightSize) {
+    int max_area = 0; 
+
+    for (int i = 0; i < heightSize; i++) {
+        for (int j = i + 1; j < heightSize; j++) {
+            int current_height = (height[i] < height[j]) ? height[i] : height[j];
+            int width = j - i;
+            int area = current_height * width;
+
+            if (area > max_area) {
+                max_area = area;
+            }
+        }
+    }
+
+    return max_area; 
+}
+
+int main() {
+    int n;
+
+    printf("Ingrese el número de líneas: ");
+    scanf("%d", &n);
+
+    if (n <= 0) {
+        printf("El número de líneas debe ser mayor que cero.\n");
+        return 1;
+    }
+
+    int* height = (int*)malloc(n * sizeof(int));
+    if (height == NULL) {
+        printf("Error al asignar memoria.\n");
+        return 1;
+    }
+
+    printf("Ingrese las alturas (separadas por espacios): ");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &height[i]);
+    }
+
+    int result = maxArea(height, n);
+    
+    printf("El área máxima que puede contener agua es: %d\n", result);
+
+    free(height);
+    
+    return 0;
+}
