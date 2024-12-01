@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+void generarTrianguloPascal(int numRows) {
+    int tri[numRows][numRows];
+
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j <= i; j++) {
+            if (j == 0 || j == i) {
+                tri[i][j] = 1;
+            } else {
+                tri[i][j] = tri[i - 1][j - 1] + tri[i - 1][j];
+            }
+        }
+    }
+
+    
+    printf("[");
+    for (int i = 0; i < numRows; i++) {
+        printf("[");
+        for (int j = 0; j <= i; j++) {
+            printf("%d", tri[i][j]);
+            if (j < i) {
+                printf(","); 
+            }
+        }
+        printf("]");
+        if (i < numRows - 1) {
+            printf(","); 
+        }
+    }
+    printf("]\n");
+}
+
+int main() {
+    int numRows;
+
+    printf("Ingrese el número de filas del triángulo de Pascal: ");
+    scanf("%d", &numRows);
+
+    if (numRows > 0) { 
+        generarTrianguloPascal(numRows);
+    } else {
+        printf("Por favor, ingrese un número entero positivo.\n");
+    }
+
+    return 0;
+}
